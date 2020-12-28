@@ -33,6 +33,8 @@ private:
   float _boardSize;
 
   int _selectedTile;
+  int _selectedTileOffsetX;
+  int _selectedTileOffsetY;
 
   bool _leftMousePressed;
   int _mousePosX;

@@ -7,7 +7,8 @@ Game::Game(unsigned int w_window_width, unsigned int w_window_height,
             Rotation w_rotation) :
 _window(sf::VideoMode(w_window_width, w_window_height), "Chess"),
 _leftMousePressed(false),
-_rotation(w_rotation)
+_rotation(w_rotation),
+_selectedTile(-1)
 {
   /* Initialize gfx, set framerate limit to 60 */
   _window.setFramerateLimit(60);
@@ -98,7 +99,7 @@ void Game::DrawBoard()
       /* If the current piece is currently floating (selected) */
       if(p.IsFloating())
       {
-        tile.setPosition(sf::Vector2f(_mousePosX, _mousePosY));
+        tile.setPosition(sf::Vector2f(_mousePosX - _selectedTileOffsetX, _mousePosY - _selectedTileOffsetY));
       }
       
 
@@ -161,6 +162,10 @@ int Game::Play()
             _mousePosY = event.mouseButton.y;
             // todo!
             _selectedTile = GetBoardTileFromCoordinates(event.mouseButton.x, event.mouseButton.y);
+            std::cout << "selected " << _selectedTile << std::endl;
+            float TileSize = _boardSize / 8;
+            _selectedTileOffsetX = event.mouseButton.x % (int)TileSize;
+            _selectedTileOffsetY = event.mouseButton.y % (int)TileSize;
             _board.GetPieces()[_selectedTile].SetFloating(true);
           }
           else if(event.mouseButton.button == sf::Mouse::Right)
@@ -172,13 +177,15 @@ int Game::Play()
 
         case sf::Event::MouseButtonReleased:
         {
-          if(_selectedTile)
+          if(_selectedTile >= 0)
           {
+            _board.GetPieces()[_selectedTile].SetFloating(false);
             std::swap(_board.GetPieces()[_selectedTile], _board.GetPieces()[GetBoardTileFromCoordinates(_mousePosX, _mousePosY)]);
           }
 
           _leftMousePressed = false;
-          _board.GetPieces()[_selectedTile].SetFloating(false);
+          _selectedTile = -1;
+          
           break;
         }
 
