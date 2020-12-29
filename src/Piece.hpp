@@ -1,6 +1,9 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
+#include <array>
+#include <memory>
 
 
 class Piece
@@ -26,6 +29,7 @@ public:
   {
     int start;
     int end;
+    Piece::Type type;
   };
 
   typedef int PiecePosition;
@@ -41,7 +45,7 @@ public:
   void SetFloating(bool w_floating = false);
 
 
-  std::vector<int> GetLegalMoves(Piece w_board[64], PiecePosition w_pos, PieceMove w_last_move) const;
+  virtual std::vector<int> GetLegalMoves(const std::array<std::unique_ptr<Piece>, 64>& w_board, PiecePosition w_pos, PieceMove w_last_move) const { std::cout << "parent" << std::endl; return std::vector<int>(); }
 
 protected:
   Color _color;

@@ -89,7 +89,7 @@ void Game::DrawBoard()
   /* draw pieces */
   for(int i = 0; i < 64; i++)
   {
-    Piece p = _board.GetPieces()[i];
+    Piece p = *_board.GetPieces()[i];
     if(p.GetType() != Piece::Type::Empty)
     {
       sf::RectangleShape tile;
@@ -166,7 +166,8 @@ int Game::Play()
             float TileSize = _boardSize / 8;
             _selectedTileOffsetX = event.mouseButton.x % (int)TileSize;
             _selectedTileOffsetY = event.mouseButton.y % (int)TileSize;
-            _board.GetPieces()[_selectedTile].SetFloating(true);
+            _board.GetPieces()[_selectedTile]->SetFloating(true);
+            _board.GetLegalMoves(_selectedTile);
           }
           else if(event.mouseButton.button == sf::Mouse::Right)
           {
@@ -179,7 +180,7 @@ int Game::Play()
         {
           if(_selectedTile >= 0)
           {
-            _board.GetPieces()[_selectedTile].SetFloating(false);
+            _board.GetPieces()[_selectedTile]->SetFloating(false);
             std::swap(_board.GetPieces()[_selectedTile], _board.GetPieces()[GetBoardTileFromCoordinates(_mousePosX, _mousePosY)]);
           }
 

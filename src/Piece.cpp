@@ -1,4 +1,5 @@
 #include "Piece.hpp"
+#include <iostream>
 
 
 Piece::Piece(Piece::Color w_color) :
@@ -33,9 +34,4 @@ bool Piece::IsFloating() const
 void Piece::SetFloating(bool w_floating)
 {
   _floating = w_floating;
-}
-
-std::vector<int> Piece::GetLegalMoves(Piece w_board[64], PiecePosition w_pos, PieceMove w_last_move) const
-{
-  return std::vector<int>();
 }

@@ -1,5 +1,9 @@
 #pragma once
 
+#include <vector>
+#include <array>
+#include <memory>
+
 #include "Piece.hpp"
 #include "Pawn.hpp"
 #include "Rook.hpp"
@@ -14,9 +18,10 @@ public:
   Board();
   ~Board();
   void InitBoard();
-  Piece* GetPieces();
+  std::array<std::unique_ptr<Piece>, 64>& GetPieces();
+  std::vector<int> GetLegalMoves(int w_piece) const;
 
 private:
-  Piece _pieces[64];
-
+  std::array<std::unique_ptr<Piece>, 64> _pieces;
+  std::vector<Piece::PieceMove> _moveHistory;
 };

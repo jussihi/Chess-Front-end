@@ -9,7 +9,7 @@ public:
 Rook(Piece::Color w_color = None);
 ~Rook();
 
-std::vector<int> GetLegalMoves(Piece w_board[64], PiecePosition w_pos, PieceMove w_last_move) const;
+virtual std::vector<int> GetLegalMoves(const std::array<std::unique_ptr<Piece>, 64>& w_board, PiecePosition w_pos, PieceMove w_last_move) const;
 
 private:
 
