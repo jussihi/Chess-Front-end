@@ -61,12 +61,16 @@ void Game::LoadTextures()
 
   _textureSquareDark.loadFromFile("../textures/square brown dark_png_shadow_256px.png");
   _textureSquareLight.loadFromFile("../textures/square brown light_png_shadow_256px.png");
+
+  _textureLegalMove.loadFromFile("../textures/transparent_circle.png");
+
 }
 
 void Game::DrawBoard()
 {
   _Tiles.clear();
   _Pieces.clear();
+  _LegalMoves.clear();
   /* draw board */
   _boardSize = 400 * 0.9;
   float TileSize = _boardSize / 8;
@@ -117,6 +121,15 @@ void Game::DrawBoard()
     }
   }
 
+  for(auto move : _selectedTileLegalMoves)
+  {
+    sf::RectangleShape currLegalMove;
+    currLegalMove.setSize(sf::Vector2f(TileSize, TileSize));
+    currLegalMove.setPosition(sf::Vector2f(TileSize * (move % 8), TileSize * (std::abs( ((move/8) + 1) - 8 ))));
+    currLegalMove.setTexture(&_textureLegalMove);
+    _LegalMoves.push_back(currLegalMove);
+  }
+
   _window.clear();
   /* draw tiles */
   for(auto it = _Tiles.begin(); it != _Tiles.end(); it++)
@@ -126,6 +139,12 @@ void Game::DrawBoard()
 
   /* draw pieces */
   for(auto it = _Pieces.begin(); it != _Pieces.end(); it++)
+  {
+      _window.draw(*it);
+  }
+
+  /* draw legal moves */
+  for(auto it = _LegalMoves.begin(); it != _LegalMoves.end(); it++)
   {
       _window.draw(*it);
   }
@@ -167,7 +186,7 @@ int Game::Play()
             _selectedTileOffsetX = event.mouseButton.x % (int)TileSize;
             _selectedTileOffsetY = event.mouseButton.y % (int)TileSize;
             _board.GetPieces()[_selectedTile]->SetFloating(true);
-            _board.GetLegalMoves(_selectedTile);
+            _selectedTileLegalMoves = _board.GetLegalMoves(_selectedTile);
           }
           else if(event.mouseButton.button == sf::Mouse::Right)
           {

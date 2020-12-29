@@ -35,6 +35,7 @@ private:
   int _selectedTile;
   int _selectedTileOffsetX;
   int _selectedTileOffsetY;
+  std::vector<int> _selectedTileLegalMoves;
 
   bool _leftMousePressed;
   int _mousePosX;
@@ -46,9 +47,12 @@ private:
   sf::Texture _textureSquareDark;
   sf::Texture _textureSquareLight;
 
+  sf::Texture _textureLegalMove;
+
 
   std::vector<sf::RectangleShape> _Tiles;
   std::vector<sf::RectangleShape> _Pieces;
+  std::vector<sf::RectangleShape> _LegalMoves;
 
   Board _board;
 };
