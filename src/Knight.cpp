@@ -28,7 +28,6 @@ std::vector<int> Knight::GetLegalMoves(const std::array<std::unique_ptr<Piece>, 
     || w_pos+*it < 0
     || std::abs( (w_pos % 8) - ((w_pos+*it) % 8) > 2) )
     {
-      std::cout << "pilalla" << std::endl;
       it = candidate_moves.erase(it);
     }
     else
