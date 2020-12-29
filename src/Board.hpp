@@ -19,9 +19,11 @@ public:
   ~Board();
   void InitBoard();
   std::array<std::unique_ptr<Piece>, 64>& GetPieces();
-  std::vector<int> GetLegalMoves(int w_piece) const;
+  std::vector<int> GetLegalMoves(int w_piece);
+  int GetChecks(Piece::Color w_color);
 
 private:
   std::array<std::unique_ptr<Piece>, 64> _pieces;
   std::vector<Piece::PieceMove> _moveHistory;
+  Piece::Color _currentTurn;
 };

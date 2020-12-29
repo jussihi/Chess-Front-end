@@ -76,6 +76,9 @@ void Board::InitBoard()
   /* Set black king */
   _pieces[60] = std::make_unique<King>(Piece::Color::Black);
 
+  /* The game starts by white */
+  _currentTurn = Piece::Color::White;
+
 }
 
 std::array<std::unique_ptr<Piece>, 64>& Board::GetPieces()
@@ -84,11 +87,85 @@ std::array<std::unique_ptr<Piece>, 64>& Board::GetPieces()
 }
 
 
-std::vector<int> Board::GetLegalMoves(int w_piece) const
+std::vector<int> Board::GetLegalMoves(int w_piece)
 {
+  std::vector<int> legal_moves;
+
+  // get the legal moves for the piece
   if(_moveHistory.empty())
   {
-    return std::move(_pieces[w_piece]->GetLegalMoves(_pieces, w_piece, {0, 0, Piece::Type::Empty}));
+    legal_moves = _pieces[w_piece]->GetLegalMoves(_pieces, w_piece, {0, 0, Piece::Type::Empty});
   }
-  return std::move(_pieces[w_piece]->GetLegalMoves(_pieces, w_piece, _moveHistory.back()));
+  else
+  {
+    legal_moves = _pieces[w_piece]->GetLegalMoves(_pieces, w_piece, _moveHistory.back());
+  }
+
+  // check if the moves result in / prevent checks
+  for(auto it = legal_moves.begin(); it != legal_moves.end();)
+  {
+    // store current status of the board
+    std::unique_ptr<Piece> temp = std::make_unique<Piece>();
+    std::swap(temp, _pieces[*it]);
+    std::swap(_pieces[w_piece], _pieces[*it]);
+
+    // Find any checks
+    int checks = GetChecks(_currentTurn);
+    
+    // return the board status
+    std::swap(_pieces[w_piece], _pieces[*it]);
+    std::swap(temp, _pieces[*it]);
+
+    // Last, discard the move if it results in a check
+    if(checks)
+    {
+      it = legal_moves.erase(it);
+    }
+    else
+    {
+      it++;
+    }
+    
+  }
+
+  for(auto move : legal_moves)
+  {
+    std::cout << move << std::endl;
+  }
+
+  return legal_moves;
+}
+
+
+int Board::GetChecks(Piece::Color w_color)
+{
+  int checks = 0;
+
+  for(int i = 0; i < 64; i++)
+  {
+    if(_pieces[i]->GetType() != Piece::Type::Empty && _pieces[i]->GetColor() != w_color)
+    {
+      std::vector<int> legal_moves;
+      // get the legal moves for the piece
+      if(_moveHistory.empty())
+      {
+        legal_moves = _pieces[i]->GetLegalMoves(_pieces, i, {0, 0, Piece::Type::Empty});
+      }
+      else
+      {
+        legal_moves = _pieces[i]->GetLegalMoves(_pieces, i, _moveHistory.back());
+      }
+
+      // check for checks
+      for(auto& move : legal_moves)
+      {
+        if(_pieces[move]->GetColor() == w_color && _pieces[move]->GetType() == Piece::Type::King)
+        {
+          checks++;
+        }
+      }
+    }
+  }
+
+  return checks;
 }
