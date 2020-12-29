@@ -54,5 +54,5 @@ std::vector<int> King::GetLegalMoves(const std::array<std::unique_ptr<Piece>, 64
       }
     }
   }
-
+  return legal_moves;
 }
