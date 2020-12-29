@@ -119,9 +119,5 @@ std::vector<int> Pawn::GetLegalMoves(const std::array<std::unique_ptr<Piece>, 64
     }
   }
 
-  for(auto it : legal_moves)
-  {
-    std::cout << it << std::endl;
-  }
   return legal_moves;
 }
