@@ -9,8 +9,9 @@ PROJECT(Chess-frontend)
 
 
 # Set compiler and linker flags
-SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_CXX_STANDARD 14)
 SET(CMAKE_CXX_FLAGS "-g")
+set(CMAKE_BUILD_TYPE Debug)
 
 SET(SOURCES
 	src/Game.cpp src/Game.hpp
