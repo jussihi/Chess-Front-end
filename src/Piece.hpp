@@ -10,9 +10,9 @@ class Piece
 {
 public:
   enum Color{
-    None,
-    White,
-    Black
+    Black = -1,
+    None = 0,
+    White = 1
   };
 
   enum Type{
