@@ -49,11 +49,16 @@ std::vector<int> Pawn::GetLegalMoves(const std::array<std::unique_ptr<Piece>, 64
   }
 
   // the pawn should not land on preoccupied tiles
-  if(move1 && w_board[move1]->GetType() == Piece::Type::Empty) 
-    legal_moves.push_back(move1);
+  if(move1 >= 0)
+  {
+    if(move1 && w_board[move1]->GetType() == Piece::Type::Empty) 
+      legal_moves.push_back(move1);
 
-  if(move2 && w_board[move2]->GetType() == Piece::Type::Empty && move1 && w_board[move1]->GetType() == Piece::Type::Empty) 
-    legal_moves.push_back(move2);
+    if(move2 >= 0)
+      if(move2 && w_board[move2]->GetType() == Piece::Type::Empty && move1 && w_board[move1]->GetType() == Piece::Type::Empty) 
+        legal_moves.push_back(move2);
+  }
+  
 
   // checks for eating left
   if(0 <= eatleft && eatleft < 64)
