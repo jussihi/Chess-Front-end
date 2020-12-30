@@ -23,27 +23,27 @@ std::vector<int> Pawn::GetLegalMoves(const std::array<std::unique_ptr<Piece>, 64
     case Piece::Color::White:
     {
       // check boundaries
-      move1 = (w_pos+8) < 64 ? (w_pos + 8) : 0;
+      move1 = (w_pos+8)  < 64 ? w_pos + 8 : -1;
 
       // first pawn move can be 2 tiles
-      move2 = (w_pos/8) == 1 ? (w_pos + 16) : 0;
+      move2 = (w_pos/8) == 1 ? w_pos + 16 : -1;
 
       // check if the pawn is on the rim
-      eatleft = w_pos/8 < (w_pos+7)/8 ? w_pos+7 : 0;
-      eatright = (w_pos+1)/8 == (w_pos+8)/8 ? 0 : w_pos + 9;
+      eatleft  = w_pos % 8 != 0 ? w_pos + 7 : -1;
+      eatright = w_pos % 8 != 7 ? w_pos + 9 : -1;
       break;
     }
     default:
     {
       // check boundaries
-      move1 = (w_pos-8) >= 0 ? (w_pos - 8) : 0;
+      move1 = (w_pos-8) >= 0 ? w_pos -  8 : -1;
 
       // first pawn move can be 2 tiles
-      move2 = (w_pos/8) == 6 ? (w_pos - 16) : 0;
+      move2 = (w_pos/8) == 6 ? w_pos - 16 : -1;
 
       // check if the pawn is on the rim
-      eatleft = w_pos/8 > (w_pos-7)/8 ? (w_pos - 7) : 0;
-      eatright = (w_pos-1)/8 == (w_pos-8)/8 ? 0 : (w_pos - 9);
+      eatleft  = w_pos % 8 != 7 ? w_pos - 7 : -1;
+      eatright = w_pos % 8 != 0 ? w_pos - 9 : -1;
       break;
     }
   }
@@ -56,7 +56,7 @@ std::vector<int> Pawn::GetLegalMoves(const std::array<std::unique_ptr<Piece>, 64
     legal_moves.push_back(move2);
 
   // checks for eating left
-  if(eatleft)
+  if(0 <= eatleft && eatleft < 64)
   {
     if(w_board[eatleft]->GetType() != Piece::Type::Empty && w_board[eatleft]->GetColor() != _color)
       legal_moves.push_back(eatleft);
@@ -88,7 +88,7 @@ std::vector<int> Pawn::GetLegalMoves(const std::array<std::unique_ptr<Piece>, 64
   }
 
   // checks for eating left
-  if(eatright)
+  if(0 <= eatright && eatright < 64)
   {
     if(w_board[eatright]->GetType() != Piece::Type::Empty && w_board[eatright]->GetColor() != _color)
       legal_moves.push_back(eatright);
