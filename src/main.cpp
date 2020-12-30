@@ -6,7 +6,7 @@
 int main(void)
 {
 
-  Game g;
+  Game g(1000, 1000);
   g.LoadTextures();
   return g.Play();
 }

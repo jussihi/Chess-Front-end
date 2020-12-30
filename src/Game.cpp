@@ -62,7 +62,7 @@ void Game::LoadTextures()
   _textureSquareDark.loadFromFile("../textures/square brown dark_png_shadow_256px.png");
   _textureSquareLight.loadFromFile("../textures/square brown light_png_shadow_256px.png");
 
-  _textureLegalMove.loadFromFile("../textures/transparent_circle.png");
+  _textureLegalMove.loadFromFile("../textures/transparent_circle2.png");
 
 }
 
@@ -72,7 +72,7 @@ void Game::DrawBoard()
   _Pieces.clear();
   _LegalMoves.clear();
   /* draw board */
-  _boardSize = 400 * 0.9;
+  _boardSize = 1000 * 0.9;
   float TileSize = _boardSize / 8;
   for(int i = 0; i < 64; i++)
   {
