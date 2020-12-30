@@ -15,12 +15,19 @@
 class Board
 {
 public:
+
+  enum MoveStatus {
+    Illegal,
+    Legal
+  };
+
   Board();
   ~Board();
   void InitBoard();
   std::array<std::unique_ptr<Piece>, 64>& GetPieces();
   std::vector<int> GetLegalMoves(int w_piece);
   int GetChecks(Piece::Color w_color);
+  MoveStatus MakeMove(int w_srcTile, int w_destTile);
 
 private:
   std::array<std::unique_ptr<Piece>, 64> _pieces;

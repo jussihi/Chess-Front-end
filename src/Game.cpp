@@ -200,7 +200,7 @@ int Game::Play()
           if(_selectedTile >= 0)
           {
             _board.GetPieces()[_selectedTile]->SetFloating(false);
-            std::swap(_board.GetPieces()[_selectedTile], _board.GetPieces()[GetBoardTileFromCoordinates(_mousePosX, _mousePosY)]);
+            _board.MakeMove(_selectedTile, GetBoardTileFromCoordinates(_mousePosX, _mousePosY));
           }
 
           _leftMousePressed = false;

@@ -1,5 +1,7 @@
 #include "Board.hpp"
 
+#include <algorithm>
+
 
 Board::Board()
 {
@@ -168,4 +170,39 @@ int Board::GetChecks(Piece::Color w_color)
   }
 
   return checks;
+}
+
+
+Board::MoveStatus Board::MakeMove(int w_srcTile, int w_destTile)
+{
+  Board::MoveStatus ret = Board::MoveStatus::Illegal;
+
+  struct Piece::PieceMove last_move = {0, 0, Piece::Type::Empty};
+  if(!_moveHistory.empty())
+    last_move = _moveHistory.back();
+
+  // Make sure it's the correct color moving
+  if(_pieces[w_srcTile]->GetColor() == _currentTurn)
+  {
+    // Check that the move is legal for the selected piece
+    auto legalMoves = _pieces[w_srcTile]->GetLegalMoves(_pieces, w_srcTile, last_move);
+    if(std::find(legalMoves.begin(), legalMoves.end(), w_destTile) != legalMoves.end())
+    {
+      std::swap(_pieces[w_srcTile], _pieces[w_destTile]);
+
+      // If the move ate a piece, remove it from the board
+      if(_pieces[w_srcTile]->GetColor() == -(_pieces[w_destTile]->GetColor()))
+      {
+        std::unique_ptr<Piece> empty = std::make_unique<Piece>();
+        std::swap(empty, _pieces[w_srcTile]);
+      }
+
+      // Hand the move to the other color
+      _currentTurn = Piece::Color(_currentTurn * (Piece::Color)-1);
+
+      ret = Board::MoveStatus::Legal;
+    }
+  }
+
+  return ret;
 }
