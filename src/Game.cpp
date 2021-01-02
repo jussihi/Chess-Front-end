@@ -2,13 +2,16 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
+#include <thread>
 
 Game::Game(unsigned int w_window_width, unsigned int w_window_height,
             Rotation w_rotation) :
 _window(sf::VideoMode(w_window_width, w_window_height), "Chess"),
 _leftMousePressed(false),
 _rotation(w_rotation),
-_selectedTile(-1)
+_selectedTile(-1),
+_engine(_board),
+_playerColor(Piece::Color::White)
 {
   /* Initialize gfx, set framerate limit to 60 */
   _window.setFramerateLimit(60);
@@ -181,7 +184,6 @@ int Game::Play()
             _mousePosY = event.mouseButton.y;
             // todo!
             _selectedTile = GetBoardTileFromCoordinates(event.mouseButton.x, event.mouseButton.y);
-            std::cout << "selected " << _selectedTile << std::endl;
             float TileSize = _boardSize / 8;
             _selectedTileOffsetX = event.mouseButton.x % (int)TileSize;
             _selectedTileOffsetY = event.mouseButton.y % (int)TileSize;
@@ -190,7 +192,8 @@ int Game::Play()
           }
           else if(event.mouseButton.button == sf::Mouse::Right)
           {
-
+            std::cout << "undoing" << std::endl;
+            _board.UndoMove();
           }
           break;
         }
@@ -200,7 +203,24 @@ int Game::Play()
           if(_selectedTile >= 0)
           {
             _board.GetPieces()[_selectedTile]->SetFloating(false);
-            _board.MakeMove(_selectedTile, GetBoardTileFromCoordinates(_mousePosX, _mousePosY));
+
+            // try to move the piece
+            if(_board.GetPieces()[_selectedTile]->GetColor() == _playerColor)
+            {
+              // Let engine play if the player moved piece OK
+              if(_board.MakeMove(_selectedTile, GetBoardTileFromCoordinates(_mousePosX, _mousePosY)) == Board::MoveStatus::Legal)
+              {
+                auto engineMove = _engine.EvaluateBestMove(5);
+                
+                std::cout << "engine evaluates this position as " << engineMove.evaluation << std::endl;
+                std::cout << "engine evaluates the bst move to be " << engineMove.bestMove.start << " --> " << engineMove.bestMove.end << std::endl;
+                _board.MakeMove(engineMove.bestMove.start, engineMove.bestMove.end);
+
+                //auto worker = std::thread(&Engine::EvaluateBestMove, _engine, 4);
+                //worker.detach();
+              }
+            }
+            
           }
 
           _leftMousePressed = false;

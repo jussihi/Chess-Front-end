@@ -2,6 +2,7 @@
 #include <SFML/Window.hpp>
 
 #include "Board.hpp"
+#include "Engine.hpp"
 
 
 class Game
@@ -55,4 +56,7 @@ private:
   std::vector<sf::RectangleShape> _LegalMoves;
 
   Board _board;
+  Engine _engine;
+
+  Piece::Color _playerColor;
 };
