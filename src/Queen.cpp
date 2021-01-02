@@ -7,7 +7,6 @@ _r(_color),
 _b(_color)
 {
   _type = Piece::Type::Queen;
-  std::cout << "Created new Queen with color " << _color << std::endl;
 }
 
 Queen::~Queen()
