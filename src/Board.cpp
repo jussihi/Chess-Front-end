@@ -11,6 +11,42 @@ Board::Board()
   }
 }
 
+Board::Board(const Board& other)
+{
+  // Copy the array :-)
+
+  for(int i = 0; i < 64; i++)
+  {
+    switch(other._pieces[i]->GetType())
+    {
+      case Piece::Type::Pawn:
+        _pieces[i] = std::make_unique<::Pawn>(other._pieces[i]->GetColor());
+        break;
+      case Piece::Type::Rook:
+        _pieces[i] = std::make_unique<::Rook>(other._pieces[i]->GetColor());
+        break;
+      case Piece::Type::Knight:
+        _pieces[i] = std::make_unique<::Knight>(other._pieces[i]->GetColor());
+        break;
+      case Piece::Type::Bishop:
+        _pieces[i] = std::make_unique<::Bishop>(other._pieces[i]->GetColor());
+        break;
+      case Piece::Type::King:
+        _pieces[i] = std::make_unique<::King>(other._pieces[i]->GetColor());
+        break;
+      case Piece::Type::Queen:
+        _pieces[i] = std::make_unique<::Queen>(other._pieces[i]->GetColor());
+        break;
+      default:
+        _pieces[i] = std::make_unique<::Piece>(Piece::Color::None);
+        break;
+    }
+  }
+
+  _moveHistory = other._moveHistory;
+  _currentTurn = other._currentTurn;
+}
+
 Board::~Board()
 {
 
@@ -96,7 +132,7 @@ std::vector<int> Board::GetLegalMoves(int w_piece)
   // get the legal moves for the piece
   if(_moveHistory.empty())
   {
-    legal_moves = _pieces[w_piece]->GetLegalMoves(_pieces, w_piece, {0, 0, Piece::Type::Empty});
+    legal_moves = _pieces[w_piece]->GetLegalMoves(_pieces, w_piece, {0, 0, Piece::Type::Empty, Piece::Type::Empty, Piece::Color::None});
   }
   else
   {
@@ -112,7 +148,7 @@ std::vector<int> Board::GetLegalMoves(int w_piece)
     std::swap(_pieces[w_piece], _pieces[*it]);
 
     // Find any checks
-    int checks = GetChecks(_currentTurn);
+    int checks = GetChecks(_pieces[*it]->GetColor());
     
     // return the board status
     std::swap(_pieces[w_piece], _pieces[*it]);
@@ -130,13 +166,9 @@ std::vector<int> Board::GetLegalMoves(int w_piece)
     
   }
 
-  for(auto move : legal_moves)
-  {
-    std::cout << move << std::endl;
-  }
-
   return legal_moves;
 }
+
 
 
 int Board::GetChecks(Piece::Color w_color)
@@ -189,20 +221,75 @@ Board::MoveStatus Board::MakeMove(int w_srcTile, int w_destTile)
     if(std::find(legalMoves.begin(), legalMoves.end(), w_destTile) != legalMoves.end())
     {
       std::swap(_pieces[w_srcTile], _pieces[w_destTile]);
+      _lastRemovedPiece = std::make_unique<Piece>();
+      std::swap(_lastRemovedPiece, _pieces[w_srcTile]);
 
-      // If the move ate a piece, remove it from the board
-      if(_pieces[w_srcTile]->GetColor() == -(_pieces[w_destTile]->GetColor()))
-      {
-        std::unique_ptr<Piece> empty = std::make_unique<Piece>();
-        std::swap(empty, _pieces[w_srcTile]);
-      }
 
       // Hand the move to the other color
-      _currentTurn = Piece::Color(_currentTurn * (Piece::Color)-1);
+      _currentTurn = Piece::Color(_currentTurn * -1);
+
+      // Add the move to the move history
+      _moveHistory.push_back({w_srcTile, w_destTile, _pieces[w_destTile]->GetType(), _lastRemovedPiece->GetType(), _lastRemovedPiece->GetColor()});
 
       ret = Board::MoveStatus::Legal;
     }
+    else
+    {
+      std::cout << "not a legal move!" << std::endl;
+    }
+    
   }
+  else
+  {
+    std::cout << "wrong color!" << std::endl;
+    std::cout << "source color is " << _pieces[w_srcTile]->GetColor() << " with type " << _pieces[w_srcTile]->GetType() << std::endl;
+  }
+  
 
   return ret;
+}
+
+Board::MoveStatus Board::UndoMove()
+{
+  if(_moveHistory.empty())
+  {
+    return Board::MoveStatus::Illegal;
+  }
+
+  auto lastMove = _moveHistory.back();
+  // std::cout << "undoing " << lastMove.start << " --> " << lastMove.end << std::endl;
+  std::swap(_pieces[lastMove.end], _pieces[lastMove.start]);
+
+  switch (lastMove.overriddenPieceType)
+  {
+    case Piece::Type::Pawn:
+      _pieces[lastMove.end] = std::make_unique<::Pawn>(lastMove.overriddenPieceColor);
+      break;
+    case Piece::Type::Rook:
+      _pieces[lastMove.end] = std::make_unique<::Rook>(lastMove.overriddenPieceColor);
+      break;
+    case Piece::Type::Knight:
+      _pieces[lastMove.end] = std::make_unique<::Knight>(lastMove.overriddenPieceColor);
+      break;
+    case Piece::Type::Bishop:
+      _pieces[lastMove.end] = std::make_unique<::Bishop>(lastMove.overriddenPieceColor);
+      break;
+    case Piece::Type::King:
+      _pieces[lastMove.end] = std::make_unique<::King>(lastMove.overriddenPieceColor);
+      break;
+    case Piece::Type::Queen:
+      _pieces[lastMove.end] = std::make_unique<::Queen>(lastMove.overriddenPieceColor);
+      break;
+    default:
+      _pieces[lastMove.end] = std::make_unique<::Piece>(Piece::Color::None);
+      break;
+  }
+
+  // Remove move from log
+  _moveHistory.pop_back();
+
+  // Give the move back to the undoed mover
+  _currentTurn = Piece::Color(_currentTurn * -1);
+
+  return Board::MoveStatus::Legal;
 }

@@ -16,7 +16,7 @@ public:
   };
 
   enum Type{
-    Empty,
+    Empty = 0,
     Pawn,
     Rook,
     Knight,
@@ -30,6 +30,8 @@ public:
     int start;
     int end;
     Piece::Type type;
+    Piece::Type overriddenPieceType;
+    Piece::Color overriddenPieceColor;
   };
 
   typedef int PiecePosition;
