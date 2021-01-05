@@ -28,4 +28,4 @@ SET(SOURCES
 
 
 ADD_EXECUTABLE(chess-gui ${SOURCES})
-TARGET_LINK_LIBRARIES(chess-gui sfml-graphics sfml-window sfml-system)
+TARGET_LINK_LIBRARIES(chess-gui sfml-graphics sfml-window sfml-system pthread)
