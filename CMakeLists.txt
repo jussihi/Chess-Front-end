@@ -23,6 +23,7 @@ SET(SOURCES
 	src/Bishop.cpp src/Bishop.hpp
 	src/Queen.cpp src/Queen.hpp
 	src/King.cpp src/King.hpp
+	src/Engine.cpp src/Engine.hpp
 	src/main.cpp)
 
 
